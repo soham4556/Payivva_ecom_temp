@@ -1,10 +1,6 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
+const path = require('path');
 
 // Load .env from the current directory (api folder)
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -23,4 +19,5 @@ console.log('Connecting to DB at:', dbConfig.host);
 
 const pool = mysql.createPool(dbConfig);
 
-export default pool;
+module.exports = pool;
+

@@ -1,12 +1,12 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import multer from 'multer';
-import path from 'path';
-import pool from './db.js';
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+const pool = require('./db.js');
 
 dotenv.config();
 
@@ -321,4 +321,5 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, '0.0.0.0', () => console.log(`Server running on http://localhost:${PORT}`));
 }
 
-export default app;
+module.exports = app;
+

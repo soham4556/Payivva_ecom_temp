@@ -1,4 +1,4 @@
-import pool from './db.js';
+const pool = require('./db.js');
 
 async function test() {
     try {
@@ -13,3 +13,4 @@ async function test() {
 }
 
 test();
+
