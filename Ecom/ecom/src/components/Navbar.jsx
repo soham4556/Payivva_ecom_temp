@@ -126,7 +126,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3 shrink-0">
               <button
                 onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
               >
                 <HiMenu className="text-2xl" />
               </button>
@@ -152,7 +152,7 @@ export default function Navbar() {
             </div>
 
             {/* Middle: Search Bar (Desktop) */}
-            <div className="hidden lg:flex flex-1 items-center justify-center px-8">
+            <div className="hidden md:flex flex-1 items-center justify-center px-8">
               <div className="w-full max-w-2xl transition-all duration-300">
                 <SearchBar />
               </div>
@@ -264,7 +264,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Search */}
-          <div className="lg:hidden mt-4 pb-2">
+          <div className="md:hidden mt-4 pb-2">
             <SearchBar />
           </div>
         </div>
@@ -275,7 +275,7 @@ export default function Navbar() {
 
       {/* Mobile Sidebar */}
       {isSidebarOpen && (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setIsSidebarOpen(false)}
