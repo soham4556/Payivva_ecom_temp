@@ -152,10 +152,16 @@ export default function Navbar() {
             </div>
 
             {/* Middle: Search Bar (Desktop) */}
-            <div className="hidden md:flex flex-1 items-center justify-center px-8">
-              <div className="w-full max-w-2xl transition-all duration-300">
+            <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
+              <div className="w-full max-w-sm">
                 <SearchBar />
               </div>
+              <nav className="flex items-center gap-6">
+                <Link to="/" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">Home</Link>
+                <Link to="/products" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">Products</Link>
+                <Link to="/about" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">About</Link>
+                <Link to="/contact" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">Contact</Link>
+              </nav>
             </div>
 
             {/* Right: Actions */}
