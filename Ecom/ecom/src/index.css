@@ -21,7 +21,17 @@ body {
   background-color: #f1f5f9;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-width: 320px;
 }
+
+/* Force Desktop Experience on "Desktop Site" Mode */
+@media (min-width: 768px) {
+  html, body {
+    min-width: 1200px;
+    overflow-x: auto;
+  }
+}
+
 
 /* Smooth transitions for all interactive elements */
 a, button {
