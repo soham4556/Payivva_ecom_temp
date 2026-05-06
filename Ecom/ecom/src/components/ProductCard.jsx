@@ -185,11 +185,12 @@ function CartIcon() {
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
 
-  const imageUrl = product.image?.startsWith("http")
+  const imageUrl = product.image?.startsWith("http") || product.image?.startsWith("data:")
     ? product.image
     : product.image
       ? `/media/${product.image}`
       : "/placeholder.svg";
+
 
   const inStock = product.stock > 0;
 
