@@ -577,10 +577,11 @@ export default function Checkout() {
                         }}
                       >
                         <img
-                          src={item.image || "https://via.placeholder.com/40"}
+                          src={item.image?.startsWith("http") || item.image?.startsWith("data:") ? item.image : (item.image ? `/media/${item.image}` : "https://via.placeholder.com/40")}
                           alt={item.name}
                           className="item-thumb"
                         />
+
                         <div style={{ minWidth: 0 }}>
                           <p
                             style={{

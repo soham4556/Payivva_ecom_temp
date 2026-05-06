@@ -494,10 +494,11 @@ export default function OrderTracker({
             {order.items?.map((item) => (
               <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <img 
-                  src={item.image || "https://via.placeholder.com/60"} 
+                  src={item.image?.startsWith("http") || item.image?.startsWith("data:") ? item.image : (item.image ? `/media/${item.image}` : "https://via.placeholder.com/60")} 
                   alt={item.product_name} 
                   style={{ width: 60, height: 60, borderRadius: 12, objectFit: "cover", background: "var(--surface)" }} 
                 />
+
                 <div style={{ flex: 1 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "var(--charcoal)", margin: 0 }}>{item.product_name}</p>
                   <p style={{ fontSize: 12, color: "var(--muted)", margin: "4px 0 0" }}>Qty: {item.quantity}</p>

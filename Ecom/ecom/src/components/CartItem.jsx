@@ -5,11 +5,12 @@ import { formatPrice } from "../utils/helpers";
 export default function CartItem({ item }) {
   const { updateQuantity, removeFromCart } = useCart();
 
-  const imageUrl = item.image?.startsWith("http")
+  const imageUrl = item.image?.startsWith("http") || item.image?.startsWith("data:")
     ? item.image
     : item.image
       ? `/media/${item.image}`
       : "/placeholder.svg";
+
 
   return (
     <div className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm">

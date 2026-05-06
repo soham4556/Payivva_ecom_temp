@@ -27,7 +27,13 @@ const styles = `
   }
   @media (max-width: 1280px) { .pv-grid .pg-grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 900px)  { .pv-grid .pg-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 520px)  { .pv-grid .pg-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 520px)  { 
+    .pv-grid .pg-grid { 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 12px;
+    } 
+  }
+
 
   /* Staggered card entrance */
   .pv-grid .pg-item {

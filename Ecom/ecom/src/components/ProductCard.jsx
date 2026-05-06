@@ -161,6 +161,17 @@ const styles = `
     transition: transform 0.25s;
   }
   .pv-card .pc-btn:hover:not(:disabled) svg { transform: translateX(2px); }
+
+  @media (max-width: 520px) {
+    .pv-card .pc-body { padding: 12px 14px 14px; }
+    .pv-card .pc-name { font-size: 13px; margin-bottom: 4px; }
+    .pv-card .pc-desc { display: none; }
+    .pv-card .pc-price { font-size: 16px; }
+    .pv-card .pc-price-sym { font-size: 11px; }
+    .pv-card .pc-btn { padding: 10px 12px; font-size: 11px; border-radius: 10px; }
+    .pv-card .pc-stock-badge { font-size: 8px; padding: 2px 6px; }
+  }
+
 `;
 
 function CartIcon() {
