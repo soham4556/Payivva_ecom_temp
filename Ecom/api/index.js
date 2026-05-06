@@ -18,7 +18,10 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use('/uploads', express.static('uploads'));
+
+// Multer using memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Global Logger for debugging
 app.use((req, res, next) => {
@@ -26,17 +29,10 @@ app.use((req, res, next) => {
     next();
 });
 
-// Multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, 'uploads/'); },
-    filename: (req, file, cb) => { cb(null, Date.now() + '-' + file.originalname); }
-});
-const upload = multer({ storage });
-
 // Helpers
 const formatProduct = (p) => ({
     ...p,
-    image: p.image_url ? (p.image_url.startsWith('http') ? p.image_url : `${BASE_URL}${p.image_url}`) : null,
+    image: p.image_url || null,
     is_returnable: !!p.is_returnable,
     is_exchangeable: !!p.is_exchangeable
 });
@@ -60,11 +56,12 @@ const initDB = async () => {
         
         await connection.query(`CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(100) UNIQUE NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, password VARCHAR(255) NOT NULL, role ENUM('customer', 'vendor', 'admin') DEFAULT 'customer', first_name VARCHAR(100), last_name VARCHAR(100), phone VARCHAR(20), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         await connection.query(`CREATE TABLE IF NOT EXISTS categories (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL, slug VARCHAR(100) UNIQUE NOT NULL)`);
-        await connection.query(`CREATE TABLE IF NOT EXISTS products (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, slug VARCHAR(255) UNIQUE NOT NULL, description TEXT, price DECIMAL(10, 2) NOT NULL, stock INT DEFAULT 0, category_id INT, vendor_id INT, image_url VARCHAR(255), is_active BOOLEAN DEFAULT TRUE, is_returnable BOOLEAN DEFAULT TRUE, is_exchangeable BOOLEAN DEFAULT TRUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (category_id) REFERENCES categories(id), FOREIGN KEY (vendor_id) REFERENCES users(id))`);
+        await connection.query(`CREATE TABLE IF NOT EXISTS products (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, slug VARCHAR(255) UNIQUE NOT NULL, description TEXT, price DECIMAL(10, 2) NOT NULL, stock INT DEFAULT 0, category_id INT, vendor_id INT, image_url LONGTEXT, is_active BOOLEAN DEFAULT TRUE, is_returnable BOOLEAN DEFAULT TRUE, is_exchangeable BOOLEAN DEFAULT TRUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (category_id) REFERENCES categories(id), FOREIGN KEY (vendor_id) REFERENCES users(id))`);
         await connection.query(`CREATE TABLE IF NOT EXISTS orders (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT, total_price DECIMAL(10, 2) NOT NULL, status ENUM('placed', 'confirmed', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled') DEFAULT 'placed', shipping_address TEXT NOT NULL, phone VARCHAR(20) NOT NULL, tracking_id VARCHAR(100), delivered_at TIMESTAMP NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))`);
         await connection.query(`CREATE TABLE IF NOT EXISTS order_items (id INT AUTO_INCREMENT PRIMARY KEY, order_id INT, product_id INT, vendor_id INT, quantity INT NOT NULL, price DECIMAL(10, 2) NOT NULL, FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE, FOREIGN KEY (product_id) REFERENCES products(id))`);
         
-        // Ensure columns exist for older tables
+        // Ensure columns exist and are correct type
+        try { await connection.query('ALTER TABLE products MODIFY COLUMN image_url LONGTEXT'); } catch(e){}
         try { await connection.query('ALTER TABLE products ADD COLUMN is_returnable BOOLEAN DEFAULT TRUE'); } catch(e){}
         try { await connection.query('ALTER TABLE products ADD COLUMN is_exchangeable BOOLEAN DEFAULT TRUE'); } catch(e){}
         try { await connection.query('ALTER TABLE users ADD COLUMN first_name VARCHAR(100)'); } catch(e){}
@@ -178,7 +175,7 @@ app.get(['/api/orders/:id/tracking', '/api/orders/:id/tracking/'], authenticate,
         const [items] = await pool.query('SELECT oi.*, p.name as product_name, p.image_url, p.is_returnable, p.is_exchangeable FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?', [o.id]);
         o.items = items.map(i => ({ 
             ...i, 
-            image: i.image_url ? (i.image_url.startsWith('http') ? i.image_url : `${BASE_URL}${i.image_url}`) : null,
+            image: i.image_url || null,
             is_returnable: !!i.is_returnable,
             is_exchangeable: !!i.is_exchangeable
         }));
@@ -273,7 +270,11 @@ app.get(['/api/products/vendor/:id', '/api/products/vendor/:id/'], authenticate,
 app.post(['/api/products/vendor', '/api/products/vendor/'], authenticate, upload.single('image'), async (req, res) => {
     try {
         const { name, description, price, stock, category, is_returnable, is_exchangeable } = req.body;
-        const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+        let image_url = null;
+        if (req.file) {
+            const base64Image = req.file.buffer.toString('base64');
+            image_url = `data:${req.file.mimetype};base64,${base64Image}`;
+        }
         const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
         await pool.query('INSERT INTO products (name, slug, description, price, stock, category_id, vendor_id, image_url, is_returnable, is_exchangeable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
             [name, slug, description, price, stock, category, req.user.id, image_url, is_returnable === 'true', is_exchangeable === 'true']);
@@ -293,7 +294,12 @@ app.patch(['/api/products/vendor/:id', '/api/products/vendor/:id/'], authenticat
         if (is_returnable !== undefined) { fields.push('is_returnable=?'); params.push(is_returnable === 'true' || is_returnable === true); }
         if (is_exchangeable !== undefined) { fields.push('is_exchangeable=?'); params.push(is_exchangeable === 'true' || is_exchangeable === true); }
         if (status) { fields.push('is_active=?'); params.push(status === 'active'); }
-        if (req.file) { fields.push('image_url=?'); params.push(`/uploads/${req.file.filename}`); }
+        if (req.file) { 
+            const base64Image = req.file.buffer.toString('base64');
+            const dataUri = `data:${req.file.mimetype};base64,${base64Image}`;
+            fields.push('image_url=?'); 
+            params.push(dataUri); 
+        }
         if (fields.length === 0) return res.json({ success: true });
         let query = `UPDATE products SET ${fields.join(', ')} WHERE id=? AND vendor_id=?`;
         params.push(req.params.id, req.user.id);
