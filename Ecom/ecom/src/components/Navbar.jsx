@@ -162,7 +162,7 @@ export default function Navbar() {
             <div className="flex items-center gap-6 shrink-0">
               {/* Account */}
               <div
-                className="relative hidden sm:block group"
+                className="relative hidden md:block group"
                 onMouseEnter={() => setShowUserMenu(true)}
                 onMouseLeave={() => setShowUserMenu(false)}
               >
