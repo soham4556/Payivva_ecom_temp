@@ -16,8 +16,10 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
 // Multer using memory storage
 const storage = multer.memoryStorage();
@@ -32,10 +34,11 @@ app.use((req, res, next) => {
 // Helpers
 const formatProduct = (p) => ({
     ...p,
-    image: p.image_url || null,
+    image: p.image_url ? (p.image_url.startsWith('data:') ? p.image_url : (p.image_url.startsWith('http') ? p.image_url : `${BASE_URL}${p.image_url}`)) : null,
     is_returnable: !!p.is_returnable,
     is_exchangeable: !!p.is_exchangeable
 });
+
 
 const authenticate = (req, res, next) => {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
@@ -175,7 +178,7 @@ app.get(['/api/orders/:id/tracking', '/api/orders/:id/tracking/'], authenticate,
         const [items] = await pool.query('SELECT oi.*, p.name as product_name, p.image_url, p.is_returnable, p.is_exchangeable FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?', [o.id]);
         o.items = items.map(i => ({ 
             ...i, 
-            image: i.image_url || null,
+            image: i.image_url ? (i.image_url.startsWith('data:') ? i.image_url : (i.image_url.startsWith('http') ? i.image_url : `${BASE_URL}${i.image_url}`)) : null,
             is_returnable: !!i.is_returnable,
             is_exchangeable: !!i.is_exchangeable
         }));
