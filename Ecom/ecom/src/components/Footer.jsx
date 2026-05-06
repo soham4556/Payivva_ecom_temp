@@ -48,8 +48,9 @@ const styles = `
     padding-bottom: 56px;
     border-bottom: 1px solid rgba(245,237,216,0.07);
   }
-  @media (max-width: 1024px) { .pv-footer .ft-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 768px) { .pv-footer .ft-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 560px)  { .pv-footer .ft-grid { grid-template-columns: 1fr; gap: 36px; } }
+
 
   /* ── BRAND ── */
   .pv-footer .ft-brand-row {
