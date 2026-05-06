@@ -1,0 +1,1 @@
+const e=[{key:"placed",label:"Order Placed",icon:"📦"},{key:"confirmed",label:"Confirmed",icon:"✅"},{key:"packed",label:"Packed",icon:"📋"},{key:"shipped",label:"Shipped",icon:"🚚"},{key:"out_for_delivery",label:"Out for Delivery",icon:"🏍️"},{key:"delivered",label:"Delivered",icon:"🎉"}];export{e as O};

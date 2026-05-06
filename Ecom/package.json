@@ -1,0 +1,16 @@
+{
+  "name": "payivva-ecom-fullstack",
+  "version": "1.0.0",
+  "description": "Fullstack E-commerce with React and Express",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently --kill-others --handle-input \"npm run dev --prefix ecom\" \"npm run dev --prefix api\"",
+    "clean": "taskkill /F /IM node.exe /T || exit 0",
+    "install-all": "npm install --prefix ecom && npm install --prefix api",
+    "build": "npm run build --prefix ecom",
+    "start": "node api/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
