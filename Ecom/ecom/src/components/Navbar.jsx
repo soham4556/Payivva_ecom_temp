@@ -156,11 +156,13 @@ export default function Navbar() {
               <div className="w-full max-w-sm">
                 <SearchBar />
               </div>
-              <nav className="flex items-center gap-6">
-                <Link to="/" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">Home</Link>
-                <Link to="/products" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">Products</Link>
-                <Link to="/about" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">About</Link>
-                <Link to="/contact" className="text-sm font-semibold text-gray-700 hover:text-[#D4AF37] transition-colors">Contact</Link>
+              <nav className="flex items-center gap-4 lg:gap-6">
+                <Link to="/" className="text-[13px] font-semibold text-white hover:text-[#D4AF37] transition-colors">Home</Link>
+                <Link to="/products" className="text-[13px] font-semibold text-white hover:text-[#D4AF37] transition-colors">Products</Link>
+                <Link to="/services" className="text-[13px] font-semibold text-white hover:text-[#D4AF37] transition-colors">Services</Link>
+                <Link to="/solutions" className="text-[13px] font-semibold text-white hover:text-[#D4AF37] transition-colors">Solutions</Link>
+                <Link to="/about" className="text-[13px] font-semibold text-white hover:text-[#D4AF37] transition-colors">About</Link>
+                <Link to="/contact" className="text-[13px] font-semibold text-white hover:text-[#D4AF37] transition-colors">Contact</Link>
               </nav>
             </div>
 
